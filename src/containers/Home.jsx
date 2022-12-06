@@ -19,10 +19,11 @@ const Home = () => {
     const userInfo = fetchUser();
 
     useEffect(() => {
-        const query = userQuery(userInfo?.googleId);
+        const query = userQuery(userInfo?.id);
 
         client.fetch(query)
             .then((res) => {
+                console.log("res", res);
                 setUser(res[0]);
             })
     }, []);

@@ -9,6 +9,8 @@ import { categories } from '../utils/data';
 
 const CreatePin = ({user}) => {
 
+    console.log("user", user);
+
     const[title, setTitle] = useState("");
     const[about, setAbout] = useState("");
     const[destination, setDestination] = useState("");

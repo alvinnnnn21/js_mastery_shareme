@@ -44,7 +44,10 @@ const Login = () => {
                     "isUsingFirebase": true
                 };
 
-                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify({
+                    "id": user.uid,
+                    "image": user.photoURL
+                }));
 
                 const doc = {
                     _id: data.uid,
