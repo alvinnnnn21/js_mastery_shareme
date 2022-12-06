@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import shareVideo from '../assets/videos/share.mp4';
 import logo from '../assets/images/logowhite.png';
+import { auth, googleAuthProvider } from '../firebase';
+import { signInWithPopup } from 'firebase/auth'
 
 import { client } from '../client';
 
@@ -30,6 +32,36 @@ const Login = () => {
             })
     }
 
+    const onLoginGoogle = () => {
+        signInWithPopup(auth, googleAuthProvider)   
+            .then((result) => {
+                const user = result.user;
+
+                const data = {
+                    "email": user.email,
+                    "name": user.displayName,
+                    "uid": user.uid,
+                    "isUsingFirebase": true
+                };
+
+                localStorage.setItem("user", JSON.stringify(user));
+
+                const doc = {
+                    _id: data.uid,
+                    _type: "user",
+                    username: data.name,
+                    image: user.photoURL
+                }
+
+                client.createIfNotExists(doc)
+                    .then(() => {
+                        navigate("/", {replace: true});
+                    })
+
+        }).catch((error) => {
+        });
+    }
+
     return (
         <div className="flex justify-start items-center flex-col h-screen">
             <div className="relative w-full h-full">
@@ -47,23 +79,10 @@ const Login = () => {
                         <img src={logo} width="130px" alt="logo"/>
                     </div>
                     <div className="shadow-2xl">
-                        <GoogleLogin
-                            clientId={process.env.REACT_APP_GOOGLE_API_TOKEN}
-                            render={(render) => (
-                                <button
-                                    type="button"
-                                    className="bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none"
-                                    onClick={render.onClick}
-                                    disabled={render.disabled}
-                                >
-                                    <FcGoogle className="mr-4"/>
-                                    Sign in with Google
-                                </button>
-                            )}
-                            onSuccess={responseGoogle}
-                            onFailure={responseGoogle}
-                            cookiePolicy="single_host_origin"
-                        />
+                        <button onClick={onLoginGoogle} className="bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none">
+                                <FcGoogle className="mr-4"/>
+                                Sign in with Google
+                        </button>
                     </div>
                 </div>
             </div>
